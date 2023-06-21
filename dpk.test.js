@@ -10,10 +10,7 @@ describe("deterministicPartitionKey", () => {
   // Test when event is provided but partitionKey is not
   it("generates a hash of the event when event has no partition key", () => {
     const event = { data: "data" };
-    const expected = crypto
-      .createHash("sha3-512")
-      .update(JSON.stringify(event))
-      .digest("hex");
+    const expected = hash(JSON.stringify(event));
     const result = deterministicPartitionKey(event);
     expect(result).toBe(expected);
   });
@@ -34,10 +31,7 @@ describe("deterministicPartitionKey", () => {
   it("hashes partition key when it is too long", () => {
     const longKey = "a".repeat(300);
     const event = { partitionKey: longKey };
-    const expected = crypto
-      .createHash("sha3-512")
-      .update(longKey)
-      .digest("hex");
+    const expected = hash(longKey);
     const result = deterministicPartitionKey(event);
     expect(result).toBe(expected);
   });
@@ -54,5 +48,33 @@ describe("deterministicPartitionKey", () => {
     const event = { partitionKey: shortKey };
     const result = deterministicPartitionKey(event);
     expect(result).toBe(shortKey);
+  });
+});
+
+describe("getPartitionKey", () => {
+  it("returns null when event is not provided", () => {
+    const result = getPartitionKey();
+    expect(result).toBe(null);
+  });
+
+  it("returns hashed event when event has no partition key", () => {
+    const event = { data: "data" };
+    const result = getPartitionKey(event);
+    expect(result).toBe(hash(JSON.stringify(event)));
+  });
+
+  it("returns partition key when event has a partition key", () => {
+    const event = { partitionKey: "key" };
+    const result = getPartitionKey(event);
+    expect(result).toBe(event.partitionKey);
+  });
+});
+
+describe("hash", () => {
+  it("returns a hash of the input", () => {
+    const input = "input";
+    const expected = crypto.createHash("sha3-512").update(input).digest("hex");
+    const result = hash(input);
+    expect(result).toBe(expected);
   });
 });
