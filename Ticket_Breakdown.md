@@ -21,27 +21,28 @@ You will be graded on the level of detail in each ticket, the clarity of the exe
 - The facility-agent relationship seems to be a 1-Many relationship. This is inferred from the schema provided otherwise an extra **Agents_Facilities** table would have been provided as part of the schema
 - The Custom Agent id feature is a required feature by all the facilities we are currently serving
 - A new Agent profile is created everytime an Agent stops working with one facility and starts working with another facility under us.
+- The functions are some Remote Procedure Calls called on the client (TRPc)
 
 ### Ticket 1: Implementing Custom IDs in the Agent Table
 
-*Description*: Add an extra `custom_facility_id` field to the agent table.
+*Description*: Modify the existing agent table in the database to include a new optional `custom_facility_id` field.
 
 *Acceptance Criteria*:
 
-- An agent can now have a unique custom ID - this ID relating to the one facility they work with.
-- Custom IDs can be retrieved when querying the agent details from the facility's perspective.
+- Agent table now contains a nullable `custom_facility_id` field.
+- No existing functionality is disrupted.
 
-*Time/Effort Estimates*: This will take about two days. One day for implementing the changes and one day for testing.
+*Time/Effort Estimates*: One day for implementing the changes and half a day for testing.
 
 *Implementation Details*:
 
 - Modify the Agent table to include a **`custom_facility_id`** field. This field will be nullable as it's optional.
 - Ensure that the agent's custom ID can be set when creating or updating the agent record for a facility.
-- Update the getShiftsByFacility function to include the custom_id in the metadata about the agent.
+- Update all relevant database queries and functions to account for the new field. ie. `getShiftsByFacility`
 
 ### Ticket 2: Adjusting the Reporting Feature to Include Custom IDs
 
-*Description*: Modify the existing `generateReport` function to include custom IDs in the output PDF instead of the internal database IDs.
+*Description*: Modify the existing `generateReport` function to include custom IDs in the output PDF instead of the internal database IDs. And support generatingReport for an agent by passing a `custom_facility_id`
 
 *Acceptance Criteria*:
 
@@ -53,8 +54,8 @@ You will be graded on the level of detail in each ticket, the clarity of the exe
 
 *Implementation Details*:
 
-- Modify the generateReport function to map the agent metadata to the custom_id field instead of the internal database ID.
-- If the custom_id field is not present or null, report will show an `n/a` message on the pdf report.
+- Modify the generateReport function to map the agent metadata to the custom_facility_id field instead of the internal database ID.
+- If the custom_facility_id field is not present or null, report will show an `n/a` message on the pdf report.
 - The generateReport should accept an optional custom_agent_id parameter provided that when provided, the function generates a report only for the agent associated with the custom_agent_id and returns a full report for all agents for the facility when not provided
 
 ### Ticket 3: Updating the UI for Facilities to Set Custom IDs for Agents
@@ -72,6 +73,7 @@ You will be graded on the level of detail in each ticket, the clarity of the exe
 
 - Add an input field for the custom ID in the agent creation and update forms.
 - Ensure that the custom ID is displayed in the agent's details page.
+- Handle relevant loading, empty and error states
 
 ### Ticket 3: Updating the UI for Report Generation
 
