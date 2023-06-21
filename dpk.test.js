@@ -1,6 +1,6 @@
 const {
   deterministicPartitionKey,
-  getPartitionKeyCandidate,
+  getPartitionKey,
   hash,
 } = require("./dpk");
 const crypto = require("crypto");
@@ -69,19 +69,19 @@ describe("deterministicPartitionKey", () => {
 
 describe("getPartitionKey", () => {
   it("returns null when event is not provided", () => {
-    const result = getPartitionKeyCandidate();
+    const result = getPartitionKey();
     expect(result).toBe(null);
   });
 
   it("returns hashed event when event has no partition key", () => {
     const event = { data: "data" };
-    const result = getPartitionKeyCandidate(event);
+    const result = getPartitionKey(event);
     expect(result).toBe(hash(JSON.stringify(event)));
   });
 
   it("returns partition key when event has a partition key", () => {
     const event = { partitionKey: "key" };
-    const result = getPartitionKeyCandidate(event);
+    const result = getPartitionKey(event);
     expect(result).toBe(event.partitionKey);
   });
 });

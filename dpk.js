@@ -4,18 +4,18 @@ const TRIVIAL_PARTITION_KEY = "0";
 const MAX_PARTITION_KEY_LENGTH = 256;
 
 const deterministicPartitionKey = (event) => {
-  let candidate = getPartitionKeyCandidate(event);
+  const candidate = getPartitionKey(event);
 
   if (!candidate) return TRIVIAL_PARTITION_KEY;
 
   if (candidate.length > MAX_PARTITION_KEY_LENGTH) {
-    candidate = hash(candidate);
+    return hash(candidate);
   }
 
   return candidate;
 };
 
-function getPartitionKeyCandidate(event) {
+function getPartitionKey(event) {
   if (!event) return null;
 
   if (typeof event.partitionKey !== "string") {
@@ -31,6 +31,6 @@ function hash(data) {
 
 module.exports = {
   deterministicPartitionKey,
-  getPartitionKeyCandidate,
+  getPartitionKey,
   hash,
 };
